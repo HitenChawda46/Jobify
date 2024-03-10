@@ -32,7 +32,6 @@ const Wrapper = styled.article`
     }
     p {
       margin: 0;
-      text-transform: capitalize;
       letter-spacing: var(--letter-spacing);
       color: var(--text-secondary-color);
     }
@@ -88,6 +87,7 @@ const Wrapper = styled.article`
     display:flex;
     gap:0.5rem;
     flex-wrap:wrap;
+    margin-bottom: 1rem;
   }
   .skill {
     color:var(--primary-500);

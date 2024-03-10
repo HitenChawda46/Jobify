@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { JOB_STATUS, JOB_TYPE } from "../utils/constants.js";
+import { USER_TYPES } from "../utils/constants.js";
 
 const UserSchema = new mongoose.Schema({
     name: String,
@@ -20,6 +20,16 @@ const UserSchema = new mongoose.Schema({
     },
     avatar: String,
     avatarPublicId: String,
+    skills: [{
+        type: String
+    }],
+    resume: String,
+    resumePublicId: String,
+    userType: {
+        type: String,
+        enum: Object.values(USER_TYPES),
+        default: USER_TYPES.JOB_SEEKER
+    }
 });
 
 UserSchema.methods.toJSON = function () {

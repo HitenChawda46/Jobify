@@ -10,6 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
+    "@mui/material": "^5.15.11",
+    "@tanstack/react-query": "^5.25.0",
     "axios": "^1.6.7",
     "dayjs": "^1.11.10",
     "react": "^18.2.0",
@@ -21,6 +25,7 @@
     "styled-components": "^6.1.1"
   },
   "devDependencies": {
+    "@tanstack/react-query-devtools": "^5.25.0",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
     "@vitejs/plugin-react": "^4.2.0",

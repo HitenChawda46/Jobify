@@ -5,9 +5,9 @@ export const authenticateUser = (req, res, next) => {
     const { token } = req.cookies;
     if (!token) throw new UnauthenticatedError("authentication invalid");
     try {
-        const { userId, role } = verifyJWT(token);
+        const { userId, role, userType } = verifyJWT(token);
         const testUser = userId === "65d694b8c8f683d3c95c4358";
-        req.user = { userId, role, testUser };
+        req.user = { userId, role, userType, testUser };
         next();
     } catch (error) {
         throw new UnauthenticatedError("authentication invalid");
@@ -26,6 +26,14 @@ export const authorizePermissions = (...roles) => {
 export const checkForTestUser = (req, res, next) => {
     if (req.user.testUser) {
         throw new BadRequestError('Demo User. Read Only!');
+    }
+    next();
+};
+
+export const checkForUserType = (userType) => (req, res, next) => {
+    /* Allow test user to pass */
+    if (req.user.userType !== userType && req.user.role != "admin" && !req.user.testUser) {
+        throw new BadRequestError(`Not allowed!`);
     }
     next();
 };

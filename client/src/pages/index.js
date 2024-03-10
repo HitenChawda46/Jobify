@@ -10,3 +10,6 @@ export { default as AddJob } from './AddJob';
 export { default as EditJob } from './EditJob';
 export { default as Profile } from './Profile';
 export { default as Admin } from './Admin';
+export { default as MyApplications } from './MyApplications';
+export { default as MyJobs } from './MyJobs';
+export { default as ViewApplicants } from './ViewApplicants';

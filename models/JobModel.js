@@ -1,14 +1,10 @@
 import mongoose from "mongoose";
 import { JOB_STATUS, JOB_TYPE } from "../utils/constants.js";
+import Application from "./ApplicationModel.js";
 
 const JobSchema = new mongoose.Schema({
     company: String,
     position: String,
-    jobStatus: {
-        type: String,
-        enum: Object.values(JOB_STATUS),
-        default: JOB_STATUS.PENDING
-    },
     jobType: {
         type: String,
         enum: Object.values(JOB_TYPE),
@@ -21,7 +17,15 @@ const JobSchema = new mongoose.Schema({
     createdBy: {
         type: mongoose.Types.ObjectId,
         ref: "User"
-    }
+    },
+    skills: [{
+        type: String
+    }]
 }, { timestamps: true });
+
+JobSchema.pre('findOneAndDelete', async function (next) {
+    const id = this.getQuery()._id;
+    await mongoose.model("Application").deleteOne({ jobId: id });
+});
 
 export default mongoose.model("Job", JobSchema);

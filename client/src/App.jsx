@@ -13,6 +13,9 @@ import {
   Profile,
   Admin,
   EditJob,
+  MyApplications,
+  MyJobs,
+  ViewApplicants,
 } from "./pages";
 import { action as registerAction } from "./pages/Register";
 import { action as loginAction } from "./pages/Login";
@@ -25,6 +28,14 @@ import { action as deleteJobAction } from "./pages/DeleteJob";
 import { loader as adminLoader } from "./pages/Admin";
 import { action as profileAction } from "./pages/Profile";
 import { loader as statsLoader } from "./pages/Stats";
+import { action as applyJobAction } from "./pages/ApplyJob";
+import { loader as myApplicationsLoader } from "./pages/MyApplications";
+import { loader as myJobsLoader } from "./pages/MyJobs";
+import { loader as viewApplicantsLoader } from "./pages/ViewApplicants";
+import { action as updateApplicantAction } from "./pages/UpdateApplicant";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ErrorElement } from "./components";
 
 const checkDefaultTheme = () => {
   const isDarkTheme = localStorage.getItem("darkTheme") === "true";
@@ -33,6 +44,14 @@ const checkDefaultTheme = () => {
 };
 
 const isDarkThemeEnabled = checkDefaultTheme();
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 2,
+    },
+  },
+});
 
 const router = createBrowserRouter([
   {
@@ -52,45 +71,67 @@ const router = createBrowserRouter([
       {
         path: "login",
         element: <Login />,
-        action: loginAction,
+        action: loginAction(queryClient),
       },
       {
         path: "dashboard",
         element: <DashboardLayout isDarkThemeEnabled={isDarkThemeEnabled} />,
-        loader: dashboardLoader,
+        loader: dashboardLoader(queryClient),
         children: [
           {
             index: true,
+            element: <AllJobs />,
+            loader: allJobsLoader(queryClient),
+            errorElement: <ErrorElement />,
+          },
+          {
+            path: "add-job",
             element: <AddJob />,
-            action: addJobAction,
+            action: addJobAction(queryClient),
           },
           {
             path: "stats",
             element: <Stats />,
-            loader: statsLoader,
-          },
-          {
-            path: "all-jobs",
-            element: <AllJobs />,
-            loader: allJobsLoader,
+            loader: statsLoader(queryClient),
+            errorElement: <ErrorElement />,
           },
           {
             path: "profile",
             element: <Profile />,
-            action: profileAction,
+            action: profileAction(queryClient),
           },
           {
             path: "admin",
             element: <Admin />,
-            loader: adminLoader,
+            loader: adminLoader(queryClient),
           },
           {
             path: "edit-job/:id",
             element: <EditJob />,
-            loader: editJobLoader,
-            action: editJobAction,
+            loader: editJobLoader(queryClient),
+            action: editJobAction(queryClient),
           },
-          { path: "delete-job/:id", action: deleteJobAction },
+          { path: "delete-job/:id", action: deleteJobAction(queryClient) },
+          { path: "apply-job/:id", action: applyJobAction(queryClient) },
+          {
+            path: "my-applications",
+            element: <MyApplications />,
+            loader: myApplicationsLoader(queryClient),
+          },
+          {
+            path: "my-jobs",
+            element: <MyJobs />,
+            loader: myJobsLoader(queryClient),
+          },
+          {
+            path: "my-jobs/:id",
+            element: <ViewApplicants />,
+            loader: viewApplicantsLoader(queryClient),
+          },
+          {
+            path: "my-applications/:id",
+            action: updateApplicantAction(queryClient),
+          },
         ],
       },
     ],
@@ -99,7 +140,12 @@ const router = createBrowserRouter([
 ]);
 
 const App = () => {
-  return <RouterProvider router={router} />;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
+  );
 };
 
 export default App;

@@ -12,8 +12,8 @@ import "react-toastify/dist/ReactToastify.css";
 // console.log(response);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
+  <>
     <App />
     <ToastContainer position="top-center" />
-  </React.StrictMode>
+  </>
 );

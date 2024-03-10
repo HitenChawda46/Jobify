@@ -1,9 +1,10 @@
 import { body, validationResult, param } from "express-validator";
 import { BadRequestError, NotFoundError, UnauthorizedError } from "../errors/customErrors.js";
-import { JOB_STATUS, JOB_TYPE } from "../utils/constants.js";
+import { JOB_STATUS, JOB_TYPE, PRIMARY_SEPARATOR, USER_TYPES } from "../utils/constants.js";
 import mongoose from "mongoose";
 import Job from "../models/JobModel.js";
 import User from "../models/UserModel.js";
+import Application from "../models/ApplicationModel.js";
 
 
 const withValidationErrors = (validateValues) => {
@@ -30,10 +31,17 @@ export const validateJobInput = withValidationErrors([
   body('company').notEmpty().withMessage('company is required'),
   body('position').notEmpty().withMessage('position is required'),
   body('jobLocation').notEmpty().withMessage('job location is required'),
-  body('jobStatus')
-    .isIn(Object.values(JOB_STATUS))
-    .withMessage('invalid status value'),
+  // body('jobStatus')
+  //   .isIn(Object.values(JOB_STATUS))
+  //   .withMessage('invalid status value'),
   body('jobType').isIn(Object.values(JOB_TYPE)).withMessage('invalid job type'),
+  body('skills').custom((value) => {
+    const skillsArray = value;
+    if (skillsArray.length <= 2) {
+      return false;
+    }
+    return true;
+  }).withMessage('Minimum 3 skills are required'),
 ]);
 
 // export const validateIdParam = withValidationErrors([
@@ -71,6 +79,16 @@ export const validateRegisterInput = withValidationErrors([
     .withMessage('password must be at least 8 characters long'),
   body('location').notEmpty().withMessage('location is required'),
   body('lastName').notEmpty().withMessage('last name is required'),
+  body('skills').custom((value, { req }) => {
+    if (req.body.userType === USER_TYPES.JOB_SEEKER) {
+      const skillsArray = value.split(PRIMARY_SEPARATOR);
+      if (skillsArray.length <= 2) {
+        return false;
+      }
+    }
+    return true;
+  }).withMessage('Minimum 3 skills are required'),
+  body('userType').isIn(Object.values(USER_TYPES)).withMessage("invalid user type")
 ]);
 
 export const validateLoginInput = withValidationErrors([
@@ -97,4 +115,34 @@ export const validateUpdateUserInput = withValidationErrors([
     }),
   body('lastName').notEmpty().withMessage('last name is required'),
   body('location').notEmpty().withMessage('location is required'),
+  body('skills').custom((value, { req }) => {
+    if (req.user.userType === USER_TYPES.JOB_SEEKER) {
+      const skillsArray = value.split(PRIMARY_SEPARATOR);
+      if (skillsArray.length <= 2) {
+        return false;
+      }
+    }
+    return true;
+  }).withMessage('Minimum 3 skills are required'),
+]);
+
+export const validateApplicationInput = withValidationErrors([
+  body('jobId').custom(async (jobId) => {
+    const isValidMongoId = mongoose.Types.ObjectId.isValid(jobId);
+    if (!isValidMongoId || !(await Job.findById(jobId))) {
+      throw new BadRequestError('invalid job id');
+    }
+  }),
+]);
+
+export const validateUpdateApplicantInput = withValidationErrors([
+  param('id').custom(async (id) => {
+    const application = await Application.findById(id);
+    if (!application) {
+      throw new BadRequestError('invalid id');
+    }
+  }),
+  body('status')
+    .isIn(Object.values(JOB_STATUS))
+    .withMessage('invalid status value'),
 ]);

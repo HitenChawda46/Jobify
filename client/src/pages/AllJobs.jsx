@@ -3,29 +3,44 @@ import { useLoaderData } from "react-router-dom";
 import { toast } from "react-toastify";
 import { SearchContainer, JobsContainer } from "../components";
 import customFetch from "../utils/customFetch";
+import { useQuery } from "@tanstack/react-query";
 
-export const loader = async ({ request }) => {
-  try {
+const jobsQuery = (params) => {
+  const { search, jobType, sort, page } = params;
+  return {
+    queryKey: [
+      "jobs",
+      search ?? "",
+      jobType ?? "all",
+      sort ?? "newest",
+      page ?? 1,
+    ],
+    queryFn: async () => {
+      const { data } = await customFetch.get("/jobs", {
+        params,
+      });
+      return data;
+    },
+  };
+};
+
+export const loader =
+  (queryClient) =>
+  async ({ request }) => {
     const params = Object.fromEntries([
       ...new URL(request.url).searchParams.entries(),
     ]);
-    const { data } = await customFetch.get("/jobs", {
-      params,
-    });
+    await queryClient.ensureQueryData(jobsQuery(params));
     return {
-      data,
       searchValues: { ...params },
     };
-  } catch (error) {
-    toast.error(error.response.data.msg);
-    return error;
-  }
-};
+  };
 
 const AllJobsContext = createContext();
 
 const AllJobs = () => {
-  const { data, searchValues } = useLoaderData();
+  const { searchValues } = useLoaderData();
+  const { data } = useQuery(jobsQuery(searchValues));
   return (
     <AllJobsContext.Provider value={{ data, searchValues }}>
       <SearchContainer />

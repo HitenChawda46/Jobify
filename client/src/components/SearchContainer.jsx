@@ -7,7 +7,7 @@ import { useRef } from "react";
 
 const SearchContainer = () => {
   const { searchValues } = useAllJobsContext();
-  const { search, jobStatus, jobType, sort } = searchValues;
+  const { search, jobType, sort } = searchValues;
   const submit = useSubmit();
   const debounce = (onChange) => {
     let timeout;
@@ -16,11 +16,11 @@ const SearchContainer = () => {
       clearTimeout(timeout);
       timeout = setTimeout(() => {
         onChange(form);
-      }, 2000);
+      }, 1000);
     };
   };
   const searchInput = useRef();
-  const jobStatusInput = useRef();
+  // const jobStatusInput = useRef();
   const jobTypeInput = useRef();
   const sortInput = useRef();
   return (
@@ -37,7 +37,7 @@ const SearchContainer = () => {
             })}
             ref={searchInput}
           />
-          <FormRowSelect
+          {/* <FormRowSelect
             labelText="job status"
             name="jobStatus"
             list={["all", ...Object.values(JOB_STATUS)]}
@@ -46,7 +46,7 @@ const SearchContainer = () => {
               submit(form);
             })}
             ref={jobStatusInput}
-          />
+          /> */}
           <FormRowSelect
             labelText="job type"
             name="jobType"
@@ -67,11 +67,11 @@ const SearchContainer = () => {
             ref={sortInput}
           />
           <Link
-            to="/dashboard/all-jobs"
+            to="/dashboard"
             className="btn form-btn delete-btn"
             onClick={(event) => {
               searchInput.current.reset();
-              jobStatusInput.current.reset();
+              // jobStatusInput.current.reset();
               jobTypeInput.current.reset();
               sortInput.current.reset();
             }}

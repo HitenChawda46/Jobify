@@ -24,16 +24,28 @@ const Wrapper = styled.section`
     row-gap: 1rem;
   }
   .form-btn {
-    align-self: end;
+    // align-self: end;
     margin-top: 1rem;
     display: grid;
     place-items: center;
   }
+  .profile-page-submit-btn{
+    // margin-top: 2.1rem;
+    // align-self: start;
+  }
+  .title-resume-container{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
   @media (min-width: 992px) {
     .form-center {
       grid-template-columns: 1fr 1fr;
-      align-items: center;
+      align-items: start;
       column-gap: 1rem;
+    }
+    .form-btn{
+      margin-top: 2.1rem;
     }
   }
   @media (min-width: 1120px) {

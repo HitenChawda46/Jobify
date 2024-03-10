@@ -7,7 +7,7 @@ const Landing = () => {
   return (
     <Wrapper>
       <nav>
-        <Logo />
+        <Logo authRoute />
       </nav>
       <div className="container page">
         <div className="info">

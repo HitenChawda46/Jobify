@@ -16,3 +16,10 @@ export const JOB_SORT_BY = {
     ASCENDING: 'a-z',
     DESCENDING: 'z-a',
 };
+
+export const PRIMARY_SEPARATOR = "•";
+
+export const USER_TYPES = {
+    JOB_SEEKER: "job-seeker",
+    RECRUITER: "recruiter"
+};
