@@ -29,7 +29,15 @@ cloudinary.config({
     api_key: process.env.CLOUD_API_KEY,
     api_secret: process.env.CLOUD_API_SECRET,
 });
-app.use(helmet());
+app.use(helmet({ crossOriginEmbedderPolicy: false, originAgentCluster: true }));
+app.use(
+  helmet.contentSecurityPolicy({
+    useDefaults: true,
+    directives: {
+      "img-src": ["'self'", "https: data: blob:"],
+    },
+  })
+);
 app.use(mongoSanitize());
 app.use(cookieParser());
 app.use(express.json());
